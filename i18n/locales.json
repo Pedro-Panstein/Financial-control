@@ -1,0 +1,60 @@
+{
+  "pt": {
+    "header": {
+      "headerTitle": "Controle Financeiro",
+      "headerDescription": "Gerencie suas finanças pessoais com inteligência",
+      "menuItem": {
+        "dashboard": "Dashboard",
+        "calendar": "Calendário",
+        "charts": "Gráficos",
+        "newTransaction": "Nova Transação"
+      }
+    },
+    "filters": {
+      "title": "Filtros",
+      "clear": "Limpar",
+      "export": "Exportar CSV",
+      "inicialDate": "Data Inicial",
+      "finalDate": "Data Final",
+      "category": "Categoria",
+      "all": "Todas",
+      "type": "Tipo",
+      "typeContent": {
+        "all": "Todos",
+        "income": "Ganhos",
+        "expense": "Gastos"
+      },
+      "description": "Descrição",
+      "descriptionPlaceholder": "Buscar"
+    }
+  },
+  "en": {
+    "header": {
+      "headerTitle": "Financial Control",
+      "headerDescription": "Manage your personal finances intelligently",
+      "menuItem": {
+        "dashboard": "Dashboard",
+        "calendar": "Calendar",
+        "charts": "Graphics",
+        "newTransaction": "New Transaction"
+      }
+    },
+    "filters": {
+      "title": "Filters",
+      "clear": "Clear",
+      "export": "Export CSV",
+      "inicialDate": "Inicial Date",
+      "finalDate": "Final Date",
+      "category": "Category",
+      "all": "All",
+      "type": "Type",
+      "typeContent": {
+        "all": "All",
+        "income": "Incomes",
+        "expense": "Expenses"
+      },
+      "description": "Description",
+      "descriptionPlaceholder": "Search"
+    }
+  }
+}

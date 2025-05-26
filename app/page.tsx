@@ -28,6 +28,8 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { useTransactions } from "@/hooks/use-transactions";
 import { formatCurrency } from "@/lib/utils";
 import type { Transaction } from "@/types/transaction";
+import locales from "@/i18n/locales.json";
+import LanguageChanger from "@/components/language-changer";
 
 export default function Dashboard() {
   const {
@@ -37,6 +39,8 @@ export default function Dashboard() {
     clearAllTransactions,
   } = useTransactions();
   const [showForm, setShowForm] = useState(false);
+  const [language, setLanguage] = useState<"pt" | "en">("en");
+  const [translation, setTranslation] = useState(locales.en);
   const [activeView, setActiveView] = useState<
     "dashboard" | "calendar" | "charts"
   >("dashboard");
@@ -46,6 +50,28 @@ export default function Dashboard() {
   useEffect(() => {
     setFilteredTransactions(transactions);
   }, [transactions]);
+
+  useEffect(() => {
+    const savedLang = localStorage.getItem("language") as "pt" | "en" | null;
+
+    if (savedLang === "pt" || savedLang === "en") {
+      setLanguage(savedLang);
+    } else {
+      const browserLang = navigator.language || navigator.languages[0];
+      if (browserLang.toLowerCase().startsWith("pt")) {
+        setLanguage("pt");
+        localStorage.setItem("language", "pt");
+      } else {
+        setLanguage("en");
+        localStorage.setItem("language", "en");
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    setTranslation(locales[language]);
+    localStorage.setItem("language", language);
+  }, [language]);
 
   const currentMonth = new Date().getMonth();
   const currentYear = new Date().getFullYear();
@@ -67,7 +93,7 @@ export default function Dashboard() {
 
   const balance = totalIncome - totalExpenses;
 
-  const totalTransactions = filteredTransactions.length
+  const totalTransactions = filteredTransactions.length;
 
   const recentTransactions = filteredTransactions
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
@@ -89,21 +115,22 @@ export default function Dashboard() {
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
             <div className="space-y-2">
               <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
-                Controle Financeiro
+                {translation.header.headerTitle}
               </h1>
               <p className="text-lg text-muted-foreground">
-                Gerencie suas finanças pessoais com inteligência
+                {translation.header.headerDescription}
               </p>
             </div>
             <div className="flex flex-wrap gap-3 items-center">
               <ThemeToggle />
+              <LanguageChanger language={language} setLanguage={setLanguage} />
               <Button
                 variant={activeView === "dashboard" ? "default" : "outline"}
                 onClick={() => setActiveView("dashboard")}
                 className="shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 <Wallet className="w-4 h-4 mr-2" />
-                Dashboard
+                {translation.header.menuItem.dashboard}
               </Button>
               <Button
                 variant={activeView === "calendar" ? "default" : "outline"}
@@ -111,7 +138,7 @@ export default function Dashboard() {
                 className="shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 <Calendar className="w-4 h-4 mr-2" />
-                Calendário
+                {translation.header.menuItem.calendar}
               </Button>
               <Button
                 variant={activeView === "charts" ? "default" : "outline"}
@@ -119,20 +146,21 @@ export default function Dashboard() {
                 className="shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 <BarChart3 className="w-4 h-4 mr-2" />
-                Gráficos
+                {translation.header.menuItem.charts}
               </Button>
               <Button
                 onClick={() => setShowForm(true)}
                 className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 shadow-lg hover:shadow-xl transition-all duration-300 dark:neon-green"
               >
                 <PlusCircle className="w-4 h-4 mr-2" />
-                Nova Transação
+                {translation.header.menuItem.newTransaction}
               </Button>
             </div>
           </div>
 
           {/* Filters */}
           <TransactionFilters
+            translations={translation}
             transactions={transactions}
             onFilter={setFilteredTransactions}
             onImport={handleImportTransactions}

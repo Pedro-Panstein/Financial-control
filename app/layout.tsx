@@ -17,8 +17,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="pt-BR" suppressHydrationWarning>
-      <body className={inter.className}>
+    <html suppressHydrationWarning>
+      <body className={inter.className + " overflow-x-hidden"}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           {children}
         </ThemeProvider>

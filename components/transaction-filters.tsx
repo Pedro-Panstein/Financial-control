@@ -15,9 +15,10 @@ interface TransactionFiltersProps {
   onFilter: (filtered: Transaction[]) => void
   onImport: (transactions: Omit<Transaction, "id">[]) => void
   onClearData: () => void
+  translations: any;
 }
 
-export function TransactionFilters({ transactions, onFilter, onImport, onClearData }: TransactionFiltersProps) {
+export function TransactionFilters({ transactions, onFilter, onImport, onClearData, translations }: TransactionFiltersProps) {
   const [filters, setFilters] = useState({
     startDate: "",
     endDate: "",
@@ -111,7 +112,6 @@ export function TransactionFilters({ transactions, onFilter, onImport, onClearDa
   }
 
   const hasActiveFilters = Object.values(filters).some((value) => value !== "" && value !== "all")
-
   const exportToCSV = () => {
     const headers = ["Data", "Descrição", "Categoria", "Tipo", "Valor"]
     const csvContent = [
@@ -150,7 +150,7 @@ export function TransactionFilters({ transactions, onFilter, onImport, onClearDa
               className="shadow-md hover:shadow-lg transition-all duration-300"
             >
               <Filter className="w-4 h-4 mr-2" />
-              Filtros
+              {translations.filters.title}
               {hasActiveFilters && (
                 <Badge
                   variant="secondary"
@@ -168,7 +168,7 @@ export function TransactionFilters({ transactions, onFilter, onImport, onClearDa
                 className="text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
               >
                 <X className="w-4 h-4 mr-2" />
-                Limpar
+                {translations.filters.clear}
               </Button>
             )}
           </div>
@@ -181,7 +181,7 @@ export function TransactionFilters({ transactions, onFilter, onImport, onClearDa
               className="shadow-md hover:shadow-lg h-[40px] transition-all duration-300 hover:bg-green-50 dark:hover:bg-green-900/20 hover:text-green-700 dark:hover:text-green-400"
             >
               <Download className="w-4 h-4 mr-2" />
-              Exportar CSV
+              {translations.filters.export}
             </Button>
           </div>
         </div>
@@ -213,7 +213,7 @@ export function TransactionFilters({ transactions, onFilter, onImport, onClearDa
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 p-4 bg-gradient-to-r from-gray-50 to-blue-50 dark:from-gray-800 dark:to-blue-900/30 rounded-lg border dark:border-gray-700">
                 <div>
                   <label className="text-sm font-medium mb-2 block text-gray-700 dark:text-gray-300">
-                    Data Inicial
+                    {translations.filters.inicialDate}
                   </label>
                   <Input
                     type="date"
@@ -225,7 +225,7 @@ export function TransactionFilters({ transactions, onFilter, onImport, onClearDa
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium mb-2 block text-gray-700 dark:text-gray-300">Data Final</label>
+                  <label className="text-sm font-medium mb-2 block text-gray-700 dark:text-gray-300">{translations.filters.finalDate}</label>
                   <Input
                     type="date"
                     value={filters.endDate}
@@ -236,7 +236,7 @@ export function TransactionFilters({ transactions, onFilter, onImport, onClearDa
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium mb-2 block text-gray-700 dark:text-gray-300">Categoria</label>
+                  <label className="text-sm font-medium mb-2 block text-gray-700 dark:text-gray-300">{translations.filters.category}</label>
                   <Select
                     value={filters.category}
                     onValueChange={(value) => setFilters((prev) => ({ ...prev, category: value }))}
@@ -245,7 +245,7 @@ export function TransactionFilters({ transactions, onFilter, onImport, onClearDa
                       <SelectValue placeholder="Todas" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">Todas</SelectItem>
+                      <SelectItem value="all">{translations.filters.all}</SelectItem>
                       {categories.map((category) => (
                         <SelectItem key={category} value={category}>
                           {category}
@@ -256,7 +256,7 @@ export function TransactionFilters({ transactions, onFilter, onImport, onClearDa
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium mb-2 block text-gray-700 dark:text-gray-300">Tipo</label>
+                  <label className="text-sm font-medium mb-2 block text-gray-700 dark:text-gray-300">{translations.filters.type}</label>
                   <Select
                     value={filters.type}
                     onValueChange={(value) => setFilters((prev) => ({ ...prev, type: value }))}
@@ -265,19 +265,19 @@ export function TransactionFilters({ transactions, onFilter, onImport, onClearDa
                       <SelectValue placeholder="Todos" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">Todos</SelectItem>
-                      <SelectItem value="income">Ganhos</SelectItem>
-                      <SelectItem value="expense">Gastos</SelectItem>
+                      <SelectItem value="all">{translations.filters.typeContent.all}</SelectItem>
+                      <SelectItem value="income">{translations.filters.typeContent.income}</SelectItem>
+                      <SelectItem value="expense">{translations.filters.typeContent.expense}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium mb-2 block text-gray-700 dark:text-gray-300">Descrição</label>
+                  <label className="text-sm font-medium mb-2 block text-gray-700 dark:text-gray-300">{translations.filters.description}</label>
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
                     <Input
-                      placeholder="Buscar..."
+                      placeholder={translations.filters.descriptionPlaceholder}
                       value={filters.description}
                       onChange={(e) => setFilters((prev) => ({ ...prev, description: e.target.value }))}
                       className="pl-10 shadow-sm dark:bg-gray-800 dark:border-gray-600"
