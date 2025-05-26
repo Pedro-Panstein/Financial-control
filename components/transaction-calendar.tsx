@@ -187,7 +187,7 @@ export function TransactionCalendar({ transactions }: TransactionCalendarProps) 
     <>
       <Card className="shadow-lg border-0 dark:card-dark">
         <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/50 dark:to-indigo-900/50 rounded-t-lg">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center flex-wrap gap-4 justify-between">
             <CardTitle className="flex items-center gap-2 text-blue-800 dark:text-blue-300">
               <CalendarIcon className="w-5 h-5" />
               Calendário Financeiro
@@ -212,7 +212,7 @@ export function TransactionCalendar({ transactions }: TransactionCalendarProps) 
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </Button>
-                <span className="font-semibold min-w-[150px] text-center text-blue-800 dark:text-blue-300">
+                <span className="font-semibold min-w-[100px] sm:min-w-[150px] text-center text-blue-800 dark:text-blue-300">
                   {monthNames[month]} {year}
                 </span>
                 <Button
