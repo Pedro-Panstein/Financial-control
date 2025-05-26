@@ -1,15 +1,50 @@
-"use client"
+"use client";
 
-import { useState, useMemo, useEffect } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { TrendingUp, TrendingDown, PieChartIcon, BarChart3, Activity, Target, Calendar, DollarSign } from "lucide-react"
-import type { Transaction } from "@/types/transaction"
-import { formatCurrency } from "@/lib/utils"
+import { useState, useMemo, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  TrendingUp,
+  TrendingDown,
+  PieChartIcon,
+  BarChart3,
+  Activity,
+  Target,
+  Calendar,
+  DollarSign,
+} from "lucide-react";
+import type { Transaction } from "@/types/transaction";
+import { formatCurrency } from "@/lib/utils";
+import dynamic from "next/dynamic";
+import type { ComponentType } from "react";
 
 // Importação dos componentes Recharts
+// import {
+//   ResponsiveContainer,
+//   ComposedChart,
+//   AreaChart,
+//   LineChart,
+//   BarChart,
+//   PieChart,
+//   Bar,
+//   XAxis,
+//   YAxis,
+//   CartesianGrid,
+//   Tooltip,
+//   Legend,
+//   Area,
+//   Line,
+//   Pie,
+//   Cell
+// } from "@/components/RechartsComponents"
 import {
   ResponsiveContainer,
   ComposedChart,
@@ -26,11 +61,10 @@ import {
   Area,
   Line,
   Pie,
-  Cell
-} from "@/components/RechartsComponents"
-
+  Cell,
+} from "recharts";
 interface FinancialChartsProps {
-  transactions: Transaction[]
+  transactions: Transaction[];
 }
 
 // Paleta de cores moderna e elegante
@@ -54,53 +88,82 @@ const COLORS = {
     "#f97316", // Orange
     "#6b7280", // Gray
   ],
-}
+};
 
 // Tooltip elegante
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-white dark:bg-gray-800 p-4 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl backdrop-blur-sm">
-        <p className="font-semibold text-gray-800 dark:text-gray-200 mb-2">{label}</p>
+        <p className="font-semibold text-gray-800 dark:text-gray-200 mb-2">
+          {label}
+        </p>
         {payload.map((entry: any, index: number) => (
           <div key={index} className="flex items-center gap-2 text-sm">
-            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: entry.color }} />
-            <span className="text-gray-600 dark:text-gray-300">{entry.name}:</span>
+            <div
+              className="w-3 h-3 rounded-full"
+              style={{ backgroundColor: entry.color }}
+            />
+            <span className="text-gray-600 dark:text-gray-300">
+              {entry.name}:
+            </span>
             <span className="font-bold" style={{ color: entry.color }}>
               {formatCurrency(entry.value)}
             </span>
           </div>
         ))}
       </div>
-    )
+    );
   }
-  return null
-}
+  return null;
+};
 
 // Tooltip para gráfico de pizza
 const PieTooltip = ({ active, payload }: any) => {
   if (active && payload && payload.length) {
-    const data = payload[0].payload
+    const data = payload[0].payload;
     return (
       <div className="bg-white dark:bg-gray-800 p-4 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl backdrop-blur-sm">
-        <p className="font-semibold text-gray-800 dark:text-gray-200 mb-2">{data.category}</p>
+        <p className="font-semibold text-gray-800 dark:text-gray-200 mb-2">
+          {data.category}
+        </p>
         <div className="space-y-1">
           <p className="text-sm">
             <span className="text-gray-600 dark:text-gray-300">Total: </span>
-            <span className="font-bold text-blue-600 dark:text-blue-400">{formatCurrency(data.total)}</span>
+            <span className="font-bold text-blue-600 dark:text-blue-400">
+              {formatCurrency(data.total)}
+            </span>
           </p>
+          {data.ganhos > 0 && (
+            <p className="text-sm">
+              <span className="text-gray-600 dark:text-gray-300">Ganhos: </span>
+              <span className="font-bold text-green-600 dark:text-green-400">
+                {formatCurrency(data.ganhos)}
+              </span>
+            </p>
+          )}
+          {data.gastos > 0 && (
+            <p className="text-sm">
+              <span className="text-gray-600 dark:text-gray-300">Gastos: </span>
+              <span className="font-bold text-red-600 dark:text-red-400">
+                {formatCurrency(data.gastos)}
+              </span>
+            </p>
+          )}
           <p className="text-sm">
-            <span className="text-gray-600 dark:text-gray-300">Participação: </span>
+            <span className="text-gray-600 dark:text-gray-300">
+              Participação:{" "}
+            </span>
             <span className="font-bold text-purple-600 dark:text-purple-400">
               {((data.total / data.totalSum) * 100).toFixed(1)}%
             </span>
           </p>
         </div>
       </div>
-    )
+    );
   }
-  return null
-}
+  return null;
+};
 
 // Componente de loading para os gráficos
 const ChartSkeleton = ({ height = "350px" }: { height?: string }) => (
@@ -111,22 +174,26 @@ const ChartSkeleton = ({ height = "350px" }: { height?: string }) => (
       </div>
     </div>
   </div>
-)
+);
 
 export function FinancialCharts({ transactions }: FinancialChartsProps) {
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString())
-  const [selectedMonth, setSelectedMonth] = useState("all")
-  const [isClient, setIsClient] = useState(false)
+  const [selectedYear, setSelectedYear] = useState(
+    new Date().getFullYear().toString()
+  );
+  const [selectedMonth, setSelectedMonth] = useState("all");
+  const [isClient, setIsClient] = useState(false);
 
   // Garantir que os gráficos só renderizem no cliente
   useEffect(() => {
-    setIsClient(true)
-  }, [])
+    setIsClient(true);
+  }, []);
 
   const years = useMemo(() => {
-    if (transactions.length === 0) return [new Date().getFullYear()]
-    return Array.from(new Set(transactions.map((t) => new Date(t.date).getFullYear()))).sort((a, b) => b - a)
-  }, [transactions])
+    if (transactions.length === 0) return [new Date().getFullYear()];
+    return Array.from(
+      new Set(transactions.map((t) => new Date(t.date).getFullYear()))
+    ).sort((a, b) => b - a);
+  }, [transactions]);
 
   const months = [
     { value: "all", label: "Geral (Ano Todo)" },
@@ -142,62 +209,69 @@ export function FinancialCharts({ transactions }: FinancialChartsProps) {
     { value: "10", label: "Outubro" },
     { value: "11", label: "Novembro" },
     { value: "12", label: "Dezembro" },
-  ]
+  ];
 
   // Filtrar transações baseado no ano e mês selecionado
   const filteredTransactions = useMemo(() => {
     return transactions.filter((t) => {
-      const date = new Date(t.date)
-      const yearMatch = date.getFullYear() === Number.parseInt(selectedYear)
+      const date = new Date(t.date);
+      const yearMatch = date.getFullYear() === Number.parseInt(selectedYear);
 
       if (selectedMonth === "all") {
-        return yearMatch
+        return yearMatch;
       }
 
-      const monthMatch = date.getMonth() + 1 === Number.parseInt(selectedMonth)
-      return yearMatch && monthMatch
-    })
-  }, [transactions, selectedYear, selectedMonth])
+      const monthMatch = date.getMonth() + 1 === Number.parseInt(selectedMonth);
+      return yearMatch && monthMatch;
+    });
+  }, [transactions, selectedYear, selectedMonth]);
 
   // Dados para gráfico de evolução mensal
   const monthlyEvolutionData = useMemo(() => {
     return Array.from({ length: 12 }, (_, i) => {
-      const date = new Date(Number.parseInt(selectedYear), i, 1)
+      const date = new Date(Number.parseInt(selectedYear), i, 1);
       const monthTransactions = transactions.filter((t) => {
-        const transactionDate = new Date(t.date)
-        return transactionDate.getMonth() === date.getMonth() && transactionDate.getFullYear() === date.getFullYear()
-      })
+        const transactionDate = new Date(t.date);
+        return (
+          transactionDate.getMonth() === date.getMonth() &&
+          transactionDate.getFullYear() === date.getFullYear()
+        );
+      });
 
-      const income = monthTransactions.filter((t) => t.type === "income").reduce((sum, t) => sum + t.amount, 0)
-      const expenses = monthTransactions.filter((t) => t.type === "expense").reduce((sum, t) => sum + t.amount, 0)
+      const income = monthTransactions
+        .filter((t) => t.type === "income")
+        .reduce((sum, t) => sum + t.amount, 0);
+      const expenses = monthTransactions
+        .filter((t) => t.type === "expense")
+        .reduce((sum, t) => sum + t.amount, 0);
 
       return {
         month: date.toLocaleDateString("pt-BR", { month: "short" }),
         ganhos: income,
         gastos: expenses,
         saldo: income - expenses,
-      }
-    })
-  }, [transactions, selectedYear])
+      };
+    });
+  }, [transactions, selectedYear]);
 
   // Dados para gráfico de categorias (pizza)
   const categoryData = useMemo(() => {
-    const categoryTotals = filteredTransactions.reduce(
-      (acc, transaction) => {
-        if (!acc[transaction.category]) {
-          acc[transaction.category] = { income: 0, expense: 0 }
-        }
-        if (transaction.type === "income") {
-          acc[transaction.category].income += transaction.amount
-        } else {
-          acc[transaction.category].expense += transaction.amount
-        }
-        return acc
-      },
-      {} as Record<string, { income: number; expense: number }>,
-    )
+    const categoryTotals = filteredTransactions.reduce((acc, transaction) => {
+      if (!acc[transaction.category]) {
+        acc[transaction.category] = { income: 0, expense: 0 };
+      }
+      if (transaction.type === "income") {
+        acc[transaction.category].income += transaction.amount;
+      } else {
+        acc[transaction.category].expense += transaction.amount;
+      }
+      return acc;
+    }, {} as Record<string, { income: number; expense: number }>);
 
-    const totalSum = Object.values(categoryTotals).reduce((sum, cat) => sum + cat.income + cat.expense, 0)
+    const totalSum = Object.values(categoryTotals).reduce(
+      (sum, cat) => sum + cat.income + cat.expense,
+      0
+    );
 
     return Object.entries(categoryTotals).map(([category, totals]) => ({
       category,
@@ -205,45 +279,56 @@ export function FinancialCharts({ transactions }: FinancialChartsProps) {
       ganhos: totals.income,
       gastos: totals.expense,
       totalSum,
-    }))
-  }, [filteredTransactions])
+    }));
+  }, [filteredTransactions]);
 
   // Dados para gráfico de tendência (últimos 6 meses)
   const trendData = useMemo(() => {
-    const currentDate = new Date()
+    const currentDate = new Date();
     return Array.from({ length: 6 }, (_, i) => {
-      const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - (5 - i), 1)
+      const date = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth() - (5 - i),
+        1
+      );
       const monthTransactions = transactions.filter((t) => {
-        const transactionDate = new Date(t.date)
-        return transactionDate.getMonth() === date.getMonth() && transactionDate.getFullYear() === date.getFullYear()
-      })
+        const transactionDate = new Date(t.date);
+        return (
+          transactionDate.getMonth() === date.getMonth() &&
+          transactionDate.getFullYear() === date.getFullYear()
+        );
+      });
 
-      const income = monthTransactions.filter((t) => t.type === "income").reduce((sum, t) => sum + t.amount, 0)
-      const expenses = monthTransactions.filter((t) => t.type === "expense").reduce((sum, t) => sum + t.amount, 0)
+      const income = monthTransactions
+        .filter((t) => t.type === "income")
+        .reduce((sum, t) => sum + t.amount, 0);
+      const expenses = monthTransactions
+        .filter((t) => t.type === "expense")
+        .reduce((sum, t) => sum + t.amount, 0);
 
       return {
-        month: date.toLocaleDateString("pt-BR", { month: "short", year: "2-digit" }),
+        month: date.toLocaleDateString("pt-BR", {
+          month: "short",
+          year: "2-digit",
+        }),
         saldo: income - expenses,
         ganhos: income,
         gastos: expenses,
-      }
-    })
-  }, [transactions])
+      };
+    });
+  }, [transactions]);
 
   // Dados para gráfico de comparação de gastos por categoria
   const expenseComparisonData = useMemo(() => {
     const categoryExpenses = filteredTransactions
       .filter((t) => t.type === "expense")
-      .reduce(
-        (acc, transaction) => {
-          if (!acc[transaction.category]) {
-            acc[transaction.category] = 0
-          }
-          acc[transaction.category] += transaction.amount
-          return acc
-        },
-        {} as Record<string, number>,
-      )
+      .reduce((acc, transaction) => {
+        if (!acc[transaction.category]) {
+          acc[transaction.category] = 0;
+        }
+        acc[transaction.category] += transaction.amount;
+        return acc;
+      }, {} as Record<string, number>);
 
     return Object.entries(categoryExpenses)
       .map(([category, amount]) => ({
@@ -251,33 +336,42 @@ export function FinancialCharts({ transactions }: FinancialChartsProps) {
         valor: amount,
       }))
       .sort((a, b) => b.valor - a.valor)
-      .slice(0, 8) // Top 8 categorias
-  }, [filteredTransactions])
+      .slice(0, 8); // Top 8 categorias
+  }, [filteredTransactions]);
 
   // Dados para gráfico de fluxo de caixa diário (últimos 30 dias)
   const dailyCashFlowData = useMemo(() => {
-    const currentDate = new Date()
+    const currentDate = new Date();
     const last30Days = Array.from({ length: 30 }, (_, i) => {
-      const date = new Date(currentDate.getTime() - (29 - i) * 24 * 60 * 60 * 1000)
+      const date = new Date(
+        currentDate.getTime() - (29 - i) * 24 * 60 * 60 * 1000
+      );
       const dayTransactions = transactions.filter((t) => {
-        const transactionDate = new Date(t.date)
-        return transactionDate.toDateString() === date.toDateString()
-      })
+        const transactionDate = new Date(t.date);
+        return transactionDate.toDateString() === date.toDateString();
+      });
 
-      const income = dayTransactions.filter((t) => t.type === "income").reduce((sum, t) => sum + t.amount, 0)
-      const expenses = dayTransactions.filter((t) => t.type === "expense").reduce((sum, t) => sum + t.amount, 0)
+      const income = dayTransactions
+        .filter((t) => t.type === "income")
+        .reduce((sum, t) => sum + t.amount, 0);
+      const expenses = dayTransactions
+        .filter((t) => t.type === "expense")
+        .reduce((sum, t) => sum + t.amount, 0);
 
       return {
         day: date.getDate().toString(),
-        date: date.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" }),
+        date: date.toLocaleDateString("pt-BR", {
+          day: "2-digit",
+          month: "2-digit",
+        }),
         saldo: income - expenses,
         ganhos: income,
         gastos: expenses,
-      }
-    })
+      };
+    });
 
-    return last30Days
-  }, [transactions])
+    return last30Days;
+  }, [transactions]);
 
   if (transactions.length === 0) {
     return (
@@ -287,8 +381,12 @@ export function FinancialCharts({ transactions }: FinancialChartsProps) {
             <BarChart3 className="w-10 h-10 text-blue-600 dark:text-blue-400" />
           </div>
           <div className="text-center space-y-2">
-            <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200">Nenhum dado para exibir</h3>
-            <p className="text-muted-foreground">Adicione algumas transações para ver os gráficos</p>
+            <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
+              Nenhum dado para exibir
+            </h3>
+            <p className="text-muted-foreground">
+              Adicione algumas transações para ver os gráficos
+            </p>
           </div>
           <Button onClick={() => window.location.reload()} variant="outline">
             <Activity className="w-4 h-4 mr-2" />
@@ -296,7 +394,7 @@ export function FinancialCharts({ transactions }: FinancialChartsProps) {
           </Button>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
@@ -362,23 +460,60 @@ export function FinancialCharts({ transactions }: FinancialChartsProps) {
                 <ChartSkeleton height="400px" />
               ) : (
                 <ResponsiveContainer width="100%" height="100%">
-                  <ComposedChart data={monthlyEvolutionData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                  <ComposedChart
+                    data={monthlyEvolutionData}
+                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                  >
                     <defs>
-                      <linearGradient id="incomeGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={COLORS.success} stopOpacity={0.8} />
-                        <stop offset="95%" stopColor={COLORS.success} stopOpacity={0.1} />
+                      <linearGradient
+                        id="incomeGradient"
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2="1"
+                      >
+                        <stop
+                          offset="5%"
+                          stopColor={COLORS.success}
+                          stopOpacity={0.8}
+                        />
+                        <stop
+                          offset="95%"
+                          stopColor={COLORS.success}
+                          stopOpacity={0.1}
+                        />
                       </linearGradient>
-                      <linearGradient id="expenseGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={COLORS.danger} stopOpacity={0.8} />
-                        <stop offset="95%" stopColor={COLORS.danger} stopOpacity={0.1} />
+                      <linearGradient
+                        id="expenseGradient"
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2="1"
+                      >
+                        <stop
+                          offset="5%"
+                          stopColor={COLORS.danger}
+                          stopOpacity={0.8}
+                        />
+                        <stop
+                          offset="95%"
+                          stopColor={COLORS.danger}
+                          stopOpacity={0.1}
+                        />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" opacity={0.5} />
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="#e5e7eb"
+                      opacity={0.5}
+                    />
                     <XAxis dataKey="month" stroke="#6b7280" fontSize={12} />
                     <YAxis
                       stroke="#6b7280"
                       fontSize={12}
-                      tickFormatter={(value : any) => `R$ ${(value / 1000).toFixed(0)}k`}
+                      tickFormatter={(value: any) =>
+                        `R$ ${(value / 1000).toFixed(0)}k`
+                      }
                     />
                     <Tooltip content={<CustomTooltip />} />
                     <Legend />
@@ -412,61 +547,15 @@ export function FinancialCharts({ transactions }: FinancialChartsProps) {
             </div>
           </CardContent>
         </Card>
-
-        {/* Distribuição por Categoria */}
         <Card className="shadow-lg border-0 overflow-hidden dark:card-dark">
-          <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30">
-            <CardTitle className="flex items-center gap-2 text-purple-800 dark:text-purple-300">
-              <PieChartIcon className="w-5 h-5" />
-              Distribuição por Categoria
+          <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30">
+            <CardTitle className="flex items-center gap-2 text-emerald-800 dark:text-emerald-300">
+              <TrendingUp className="w-5 h-5" />
+              Tendência de Ganhos
               <Badge
                 variant="secondary"
-                className="bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300"
+                className="bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300"
               >
-                {selectedMonth === "all" ? "Ano Todo" : months.find((m) => m.value === selectedMonth)?.label}
-              </Badge>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-6">
-            <div className="h-[350px] w-full">
-              {!isClient ? (
-                <ChartSkeleton />
-              ) : categoryData.length > 0 ? (
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={categoryData}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ category, percent } : any) => `${category} (${(percent * 100).toFixed(0)}%)`}
-                      outerRadius={120}
-                      fill="#8884d8"
-                      dataKey="total"
-                    >
-                      {categoryData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS.categories[index % COLORS.categories.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip content={<PieTooltip />} />
-                  </PieChart>
-                </ResponsiveContainer>
-              ) : (
-                <div className="flex items-center justify-center h-full">
-                  <p className="text-muted-foreground">Nenhuma transação no período selecionado</p>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Tendência dos Últimos 6 Meses */}
-        <Card className="shadow-lg border-0 overflow-hidden dark:card-dark">
-          <CardHeader className="bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/30 dark:to-cyan-900/30">
-            <CardTitle className="flex items-center gap-2 text-blue-800 dark:text-blue-300">
-              <Activity className="w-5 h-5" />
-              Tendência Recente
-              <Badge variant="secondary" className="bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300">
                 6 meses
               </Badge>
             </CardTitle>
@@ -477,19 +566,280 @@ export function FinancialCharts({ transactions }: FinancialChartsProps) {
                 <ChartSkeleton />
               ) : (
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={trendData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                  <AreaChart
+                    data={trendData}
+                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                  >
                     <defs>
-                      <linearGradient id="balanceGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={COLORS.primary} stopOpacity={0.8} />
-                        <stop offset="95%" stopColor={COLORS.primary} stopOpacity={0.1} />
+                      <linearGradient
+                        id="gainGradient"
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2="1"
+                      >
+                        <stop
+                          offset="5%"
+                          stopColor={COLORS.success}
+                          stopOpacity={0.8}
+                        />
+                        <stop
+                          offset="95%"
+                          stopColor={COLORS.success}
+                          stopOpacity={0.1}
+                        />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" opacity={0.5} />
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="#e5e7eb"
+                      opacity={0.5}
+                    />
                     <XAxis dataKey="month" stroke="#6b7280" fontSize={12} />
                     <YAxis
                       stroke="#6b7280"
                       fontSize={12}
-                      tickFormatter={(value : any) => `R$ ${(value / 1000).toFixed(0)}k`}
+                      tickFormatter={(value: any) =>
+                        `R$ ${(value / 1000).toFixed(0)}k`
+                      }
+                    />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Area
+                      type="monotone"
+                      dataKey="ganhos"
+                      stroke={COLORS.success}
+                      fillOpacity={1}
+                      fill="url(#gainGradient)"
+                      strokeWidth={3}
+                      name="Ganhos"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="shadow-lg border-0 overflow-hidden dark:card-dark">
+          <CardHeader className="bg-gradient-to-r from-red-50 to-rose-50 dark:from-red-900/30 dark:to-rose-900/30">
+            <CardTitle className="flex items-center gap-2 text-red-800 dark:text-red-300">
+              <TrendingDown className="w-5 h-5" />
+              Tendência de Gastos
+              <Badge
+                variant="secondary"
+                className="bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300"
+              >
+                6 meses
+              </Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-6">
+            <div className="h-[350px] w-full">
+              {!isClient ? (
+                <ChartSkeleton />
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart
+                    data={trendData}
+                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                  >
+                    <defs>
+                      <linearGradient
+                        id="expenseGradient"
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2="1"
+                      >
+                        <stop
+                          offset="5%"
+                          stopColor={COLORS.danger}
+                          stopOpacity={0.8}
+                        />
+                        <stop
+                          offset="95%"
+                          stopColor={COLORS.danger}
+                          stopOpacity={0.1}
+                        />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="#e5e7eb"
+                      opacity={0.5}
+                    />
+                    <XAxis dataKey="month" stroke="#6b7280" fontSize={12} />
+                    <YAxis
+                      stroke="#6b7280"
+                      fontSize={12}
+                      tickFormatter={(value: any) =>
+                        `R$ ${(value / 1000).toFixed(0)}k`
+                      }
+                    />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Area
+                      type="monotone"
+                      dataKey="gastos"
+                      stroke={COLORS.danger}
+                      fillOpacity={1}
+                      fill="url(#expenseGradient)"
+                      strokeWidth={3}
+                      name="Gastos"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+        {/* Distribuição por Categoria */}
+        <Card className="shadow-lg border-0 overflow-hidden dark:card-dark">
+          <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30">
+            <CardTitle className="flex items-center gap-2 text-purple-800 dark:text-purple-300">
+              <PieChartIcon className="w-5 h-5" />
+              Categoria de Gastos
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-6">
+            <div className="h-[350px] w-full">
+              {!isClient ? (
+                <ChartSkeleton />
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={categoryData.filter((c) => c.gastos > 0)}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ category, percent }: any) =>
+                        `${category} (${(percent * 100).toFixed(0)}%)`
+                      }
+                      outerRadius={120}
+                      fill="#8884d8"
+                      dataKey="gastos"
+                    >
+                      {categoryData
+                        .filter((c) => c.gastos > 0)
+                        .map((entry, index) => (
+                          <Cell
+                            key={`cell-exp-${index}`}
+                            fill={
+                              COLORS.categories[
+                                index % COLORS.categories.length
+                              ]
+                            }
+                          />
+                        ))}
+                    </Pie>
+                    <Tooltip content={<PieTooltip />} />
+                  </PieChart>
+                </ResponsiveContainer>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="shadow-lg border-0 overflow-hidden dark:card-dark">
+          <CardHeader className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/30 dark:to-blue-900/30">
+            <CardTitle className="flex items-center gap-2 text-green-800 dark:text-green-300">
+              <PieChartIcon className="w-5 h-5" />
+              Categoria de Ganhos
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-6">
+            <div className="h-[350px] w-full">
+              {!isClient ? (
+                <ChartSkeleton />
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={categoryData.filter((c) => c.ganhos > 0)}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ category, percent }: any) =>
+                        `${category} (${(percent * 100).toFixed(0)}%)`
+                      }
+                      outerRadius={120}
+                      fill="#8884d8"
+                      dataKey="ganhos"
+                    >
+                      {categoryData
+                        .filter((c) => c.ganhos > 0)
+                        .map((entry, index) => (
+                          <Cell
+                            key={`cell-inc-${index}`}
+                            fill={
+                              COLORS.categories[
+                                index % COLORS.categories.length
+                              ]
+                            }
+                          />
+                        ))}
+                    </Pie>
+                    <Tooltip content={<PieTooltip />} />
+                  </PieChart>
+                </ResponsiveContainer>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+        {/* Tendência dos Últimos 6 Meses */}
+        <Card className="shadow-lg border-0 overflow-hidden dark:card-dark col-span-1 lg:col-span-2">
+          <CardHeader className="bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/30 dark:to-cyan-900/30">
+            <CardTitle className="flex items-center gap-2 text-blue-800 dark:text-blue-300">
+              <Activity className="w-5 h-5" />
+              Tendência Recente
+              <Badge
+                variant="secondary"
+                className="bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300"
+              >
+                6 meses
+              </Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-6">
+            <div className="h-[350px] w-full">
+              {!isClient ? (
+                <ChartSkeleton />
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart
+                    data={trendData}
+                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                  >
+                    <defs>
+                      <linearGradient
+                        id="balanceGradient"
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2="1"
+                      >
+                        <stop
+                          offset="5%"
+                          stopColor={COLORS.primary}
+                          stopOpacity={0.8}
+                        />
+                        <stop
+                          offset="95%"
+                          stopColor={COLORS.primary}
+                          stopOpacity={0.1}
+                        />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="#e5e7eb"
+                      opacity={0.5}
+                    />
+                    <XAxis dataKey="month" stroke="#6b7280" fontSize={12} />
+                    <YAxis
+                      stroke="#6b7280"
+                      fontSize={12}
+                      tickFormatter={(value: any) =>
+                        `R$ ${(value / 1000).toFixed(0)}k`
+                      }
                     />
                     <Tooltip content={<CustomTooltip />} />
                     <Area
@@ -508,52 +858,6 @@ export function FinancialCharts({ transactions }: FinancialChartsProps) {
           </CardContent>
         </Card>
 
-        {/* Ranking de Gastos por Categoria */}
-        <Card className="shadow-lg border-0 overflow-hidden dark:card-dark">
-          <CardHeader className="bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/30 dark:to-red-900/30">
-            <CardTitle className="flex items-center gap-2 text-orange-800 dark:text-orange-300">
-              <TrendingDown className="w-5 h-5" />
-              Ranking de Gastos
-              <Badge
-                variant="secondary"
-                className="bg-orange-100 dark:bg-orange-900/50 text-orange-700 dark:text-orange-300"
-              >
-                Top 8
-              </Badge>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-6">
-            <div className="h-[350px] w-full">
-              {!isClient ? (
-                <ChartSkeleton />
-              ) : expenseComparisonData.length > 0 ? (
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={expenseComparisonData}
-                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                    layout="horizontal"
-                  >
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" opacity={0.5} />
-                    <XAxis
-                      type="number"
-                      stroke="#6b7280"
-                      fontSize={12}
-                      tickFormatter={(value : any) => `R$ ${(value / 1000).toFixed(0)}k`}
-                    />
-                    <YAxis dataKey="category" type="category" stroke="#6b7280" fontSize={12} width={80} />
-                    <Tooltip content={<CustomTooltip />} />
-                    <Bar dataKey="valor" fill={COLORS.danger} name="Gastos" radius={[0, 4, 4, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              ) : (
-                <div className="flex items-center justify-center h-full">
-                  <p className="text-muted-foreground">Nenhum gasto no período selecionado</p>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
         {/* Fluxo de Caixa Diário */}
         <Card className="shadow-lg border-0 overflow-hidden dark:card-dark col-span-1 lg:col-span-2">
           <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30">
@@ -564,7 +868,9 @@ export function FinancialCharts({ transactions }: FinancialChartsProps) {
                 variant="secondary"
                 className="bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300"
               >
-                Últimos 30 dias
+                {selectedMonth === "all"
+                  ? "Ano Todo"
+                  : months.find((m) => m.value === selectedMonth)?.label}
               </Badge>
             </CardTitle>
           </CardHeader>
@@ -574,13 +880,50 @@ export function FinancialCharts({ transactions }: FinancialChartsProps) {
                 <ChartSkeleton />
               ) : (
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={dailyCashFlowData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" opacity={0.5} />
+                  <LineChart
+                    data={filteredTransactions
+                      .map((t) => {
+                        const date = new Date(t.date);
+                        const label = date.toLocaleDateString("pt-BR", {
+                          day: "2-digit",
+                          month: "2-digit",
+                        });
+                        return { ...t, date: label };
+                      })
+                      .reduce((acc, t) => {
+                        const existing = acc.find((d) => d.date === t.date);
+                        if (!existing) {
+                          acc.push({
+                            date: t.date,
+                            ganhos: t.type === "income" ? t.amount : 0,
+                            gastos: t.type === "expense" ? t.amount : 0,
+                            saldo: t.type === "income" ? t.amount : -t.amount,
+                          });
+                        } else {
+                          if (t.type === "income") {
+                            existing.ganhos += t.amount;
+                            existing.saldo += t.amount;
+                          } else {
+                            existing.gastos += t.amount;
+                            existing.saldo -= t.amount;
+                          }
+                        }
+                        return acc;
+                      }, [] as { date: string; ganhos: number; gastos: number; saldo: number }[])}
+                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                  >
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="#e5e7eb"
+                      opacity={0.5}
+                    />
                     <XAxis dataKey="date" stroke="#6b7280" fontSize={12} />
                     <YAxis
                       stroke="#6b7280"
                       fontSize={12}
-                      tickFormatter={(value : any) => `R$ ${(value / 1000).toFixed(0)}k`}
+                      tickFormatter={(value: any) =>
+                        `R$ ${(value / 1000).toFixed(0)}k`
+                      }
                     />
                     <Tooltip content={<CustomTooltip />} />
                     <Legend />
@@ -632,35 +975,52 @@ export function FinancialCharts({ transactions }: FinancialChartsProps) {
             {[
               {
                 title: "Total de Ganhos",
-                value: formatCurrency(monthlyEvolutionData.reduce((sum, m) => sum + m.ganhos, 0)),
-                subtitle: `Média: ${formatCurrency(monthlyEvolutionData.reduce((sum, m) => sum + m.ganhos, 0) / 12)}`,
+                value: formatCurrency(
+                  monthlyEvolutionData.reduce((sum, m) => sum + m.ganhos, 0)
+                ),
+                subtitle: `Média: ${formatCurrency(
+                  monthlyEvolutionData.reduce((sum, m) => sum + m.ganhos, 0) /
+                    12
+                )}`,
                 color: COLORS.success,
                 icon: TrendingUp,
               },
               {
                 title: "Total de Gastos",
-                value: formatCurrency(monthlyEvolutionData.reduce((sum, m) => sum + m.gastos, 0)),
-                subtitle: `Média: ${formatCurrency(monthlyEvolutionData.reduce((sum, m) => sum + m.gastos, 0) / 12)}`,
+                value: formatCurrency(
+                  monthlyEvolutionData.reduce((sum, m) => sum + m.gastos, 0)
+                ),
+                subtitle: `Média: ${formatCurrency(
+                  monthlyEvolutionData.reduce((sum, m) => sum + m.gastos, 0) /
+                    12
+                )}`,
                 color: COLORS.danger,
                 icon: TrendingDown,
               },
               {
                 title: "Saldo Líquido",
-                value: formatCurrency(monthlyEvolutionData.reduce((sum, m) => sum + m.saldo, 0)),
-                subtitle: `Média: ${formatCurrency(monthlyEvolutionData.reduce((sum, m) => sum + m.saldo, 0) / 12)}`,
+                value: formatCurrency(
+                  monthlyEvolutionData.reduce((sum, m) => sum + m.saldo, 0)
+                ),
+                subtitle: `Média: ${formatCurrency(
+                  monthlyEvolutionData.reduce((sum, m) => sum + m.saldo, 0) / 12
+                )}`,
                 color: COLORS.primary,
                 icon: DollarSign,
               },
               {
                 title: "Melhor Mês",
                 value: (() => {
-                  const bestMonth = monthlyEvolutionData.reduce((best, current) =>
-                    current.saldo > best.saldo ? current : best,
-                  )
-                  return bestMonth.month
+                  const bestMonth = monthlyEvolutionData.reduce(
+                    (best, current) =>
+                      current.saldo > best.saldo ? current : best
+                  );
+                  return bestMonth.month;
                 })(),
                 subtitle: formatCurrency(
-                  monthlyEvolutionData.reduce((best, current) => (current.saldo > best.saldo ? current : best)).saldo,
+                  monthlyEvolutionData.reduce((best, current) =>
+                    current.saldo > best.saldo ? current : best
+                  ).saldo
                 ),
                 color: COLORS.purple,
                 icon: Target,
@@ -671,20 +1031,33 @@ export function FinancialCharts({ transactions }: FinancialChartsProps) {
                 className="text-center p-6 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-300"
               >
                 <div className="flex items-center justify-center mb-4">
-                  <div className="p-3 rounded-full" style={{ backgroundColor: `${stat.color}15`, color: stat.color }}>
+                  <div
+                    className="p-3 rounded-full"
+                    style={{
+                      backgroundColor: `${stat.color}15`,
+                      color: stat.color,
+                    }}
+                  >
                     <stat.icon className="w-6 h-6" />
                   </div>
                 </div>
-                <div className="text-2xl font-bold mb-2" style={{ color: stat.color }}>
+                <div
+                  className="text-2xl font-bold mb-2"
+                  style={{ color: stat.color }}
+                >
                   {stat.value}
                 </div>
-                <div className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">{stat.title}</div>
-                <div className="text-xs text-gray-500 dark:text-gray-400">{stat.subtitle}</div>
+                <div className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">
+                  {stat.title}
+                </div>
+                <div className="text-xs text-gray-500 dark:text-gray-400">
+                  {stat.subtitle}
+                </div>
               </div>
             ))}
           </div>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
