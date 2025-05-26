@@ -122,7 +122,7 @@ export function TransactionFilters({ transactions, onFilter, onImport, onClearDa
           `"${t.description}"`,
           t.category,
           t.type === "income" ? "Ganho" : "Gasto",
-          t.amount.toFixed(2).replace(".", ","),
+          t.amount.toFixed(2).replace(",", "."),
         ].join(","),
       ),
     ].join("\n")
