@@ -229,8 +229,8 @@ export function DataImport({ onImport, onClearData, currentTransactions }: DataI
   const downloadTemplate = () => {
     const template = [
       "Data,Descrição,Categoria,Tipo,Valor",
-      '01/01/2024,"Exemplo de ganho",Trabalho,Ganho,1000.00',
-      '02/01/2024,"Exemplo de gasto",Comida,Gasto,50.00',
+      '01/01/2025,"Exemplo de ganho",Trabalho,Ganho,1000.00',
+      '02/01/2025,"Exemplo de gasto",Comida,Gasto,50.00',
     ].join("\n")
 
     const blob = new Blob([template], { type: "text/csv;charset=utf-8;" })
