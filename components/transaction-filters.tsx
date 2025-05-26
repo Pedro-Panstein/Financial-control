@@ -141,7 +141,7 @@ export function TransactionFilters({ transactions, onFilter, onImport, onClearDa
   return (
     <Card className="shadow-lg border-0 dark:card-dark">
       <CardContent className="p-6">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center flex-wrap gap-4 justify-between mb-4">
           <div className="flex items-center gap-3">
             <Button
               variant={showFilters ? "default" : "outline"}
@@ -172,13 +172,13 @@ export function TransactionFilters({ transactions, onFilter, onImport, onClearDa
               </Button>
             )}
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             <DataImport onImport={onImport} onClearData={onClearData} currentTransactions={transactions} />
             <Button
               variant="outline"
               size="sm"
               onClick={exportToCSV}
-              className="shadow-md hover:shadow-lg transition-all duration-300 hover:bg-green-50 dark:hover:bg-green-900/20 hover:text-green-700 dark:hover:text-green-400"
+              className="shadow-md hover:shadow-lg h-[40px] transition-all duration-300 hover:bg-green-50 dark:hover:bg-green-900/20 hover:text-green-700 dark:hover:text-green-400"
             >
               <Download className="w-4 h-4 mr-2" />
               Exportar CSV

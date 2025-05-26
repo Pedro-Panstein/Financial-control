@@ -23,36 +23,12 @@ import {
 } from "lucide-react";
 import type { Transaction } from "@/types/transaction";
 import { formatCurrency } from "@/lib/utils";
-import dynamic from "next/dynamic";
-import type { ComponentType } from "react";
-
-// Importação dos componentes Recharts
-// import {
-//   ResponsiveContainer,
-//   ComposedChart,
-//   AreaChart,
-//   LineChart,
-//   BarChart,
-//   PieChart,
-//   Bar,
-//   XAxis,
-//   YAxis,
-//   CartesianGrid,
-//   Tooltip,
-//   Legend,
-//   Area,
-//   Line,
-//   Pie,
-//   Cell
-// } from "@/components/RechartsComponents"
 import {
   ResponsiveContainer,
   ComposedChart,
   AreaChart,
   LineChart,
-  BarChart,
   PieChart,
-  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -454,7 +430,7 @@ export function FinancialCharts({ transactions }: FinancialChartsProps) {
               </Badge>
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-6">
+          <CardContent className="sm:p-6 p-2 ml-[-25px] sm:ml-0">
             <div className="h-[400px] w-full">
               {!isClient ? (
                 <ChartSkeleton height="400px" />
@@ -560,7 +536,7 @@ export function FinancialCharts({ transactions }: FinancialChartsProps) {
               </Badge>
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-6">
+          <CardContent className="sm:p-6 p-2 ml-[-25px] sm:ml-0">
             <div className="h-[350px] w-full">
               {!isClient ? (
                 <ChartSkeleton />
@@ -632,7 +608,7 @@ export function FinancialCharts({ transactions }: FinancialChartsProps) {
               </Badge>
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-6">
+          <CardContent className="sm:p-6 p-2 ml-[-25px] sm:ml-0">
             <div className="h-[350px] w-full">
               {!isClient ? (
                 <ChartSkeleton />
@@ -699,7 +675,7 @@ export function FinancialCharts({ transactions }: FinancialChartsProps) {
               Categoria de Gastos
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-6">
+          <CardContent className="sm:p-6 p-2 ml-[-25px] sm:ml-0">
             <div className="h-[350px] w-full">
               {!isClient ? (
                 <ChartSkeleton />
@@ -745,7 +721,7 @@ export function FinancialCharts({ transactions }: FinancialChartsProps) {
               Categoria de Ganhos
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-6">
+          <CardContent className="sm:p-6 p-2 ml-[-25px] sm:ml-0">
             <div className="h-[350px] w-full">
               {!isClient ? (
                 <ChartSkeleton />
@@ -798,7 +774,7 @@ export function FinancialCharts({ transactions }: FinancialChartsProps) {
               </Badge>
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-6">
+          <CardContent className="sm:p-6 p-2 ml-[-25px] sm:ml-0">
             <div className="h-[350px] w-full">
               {!isClient ? (
                 <ChartSkeleton />
@@ -874,7 +850,7 @@ export function FinancialCharts({ transactions }: FinancialChartsProps) {
               </Badge>
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-6">
+          <CardContent className="sm:p-6 p-2 ml-[-25px] sm:ml-0">
             <div className="h-[350px] w-full">
               {!isClient ? (
                 <ChartSkeleton />
@@ -971,7 +947,7 @@ export function FinancialCharts({ transactions }: FinancialChartsProps) {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
             {[
               {
                 title: "Total de Ganhos",
@@ -1042,7 +1018,7 @@ export function FinancialCharts({ transactions }: FinancialChartsProps) {
                   </div>
                 </div>
                 <div
-                  className="text-2xl font-bold mb-2"
+                  className="tex-lg md:text-xl lg:text-2xl font-bold mb-2"
                   style={{ color: stat.color }}
                 >
                   {stat.value}

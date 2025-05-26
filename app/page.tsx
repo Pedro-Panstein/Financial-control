@@ -144,7 +144,7 @@ export default function Dashboard() {
             <>
               {/* Summary Cards */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <Card className="relative overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 border-0 dark:card-dark dark:neon-green">
+                <Card className="relative overflow-hidden shadow-lg hover:shadow-xl p-3 sm:p-0 transition-all duration-300 border-0 dark:card-dark dark:neon-green">
                   <div className="absolute inset-0 income-gradient opacity-10 dark:opacity-20"></div>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
                     <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-300">
@@ -164,7 +164,7 @@ export default function Dashboard() {
                   </CardContent>
                 </Card>
 
-                <Card className="relative overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 border-0 dark:card-dark dark:neon-red">
+                <Card className="relative overflow-hidden shadow-lg hover:shadow-xl p-3 sm:p-0 transition-all duration-300 border-0 dark:card-dark dark:neon-red">
                   <div className="absolute inset-0 expense-gradient opacity-10 dark:opacity-20"></div>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
                     <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-300">
@@ -184,7 +184,7 @@ export default function Dashboard() {
                   </CardContent>
                 </Card>
 
-                <Card className="relative overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 border-0 dark:card-dark dark:neon-blue">
+                <Card className="relative overflow-hidden shadow-lg hover:shadow-xl p-3 sm:p-0 transition-all duration-300 border-0 dark:card-dark dark:neon-blue">
                   <div className="absolute inset-0 balance-gradient opacity-10 dark:opacity-20"></div>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
                     <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-300">
@@ -228,7 +228,7 @@ export default function Dashboard() {
                   </CardContent>
                 </Card>
 
-                <Card className="relative overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 border-0 dark:card-dark dark:neon-purple">
+                <Card className="relative overflow-hidden shadow-lg hover:shadow-xl p-3 sm:p-0 transition-all duration-300 border-0 dark:card-dark dark:neon-purple">
                   <div className="absolute inset-0 gradient-bg opacity-10 dark:opacity-20"></div>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
                     <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-300">
@@ -277,10 +277,10 @@ export default function Dashboard() {
                       recentTransactions.map((transaction) => (
                         <div
                           key={transaction.id}
-                          className="flex items-center justify-between p-4 bg-gradient-to-r from-white to-gray-50 dark:from-gray-800 dark:to-gray-700 border border-gray-100 dark:border-gray-600 rounded-xl hover:shadow-md dark:card-hover-dark transition-all duration-300"
+                          className="flex items-center flex-wrap justify-between p-4 bg-gradient-to-r from-white to-gray-50 dark:from-gray-800 dark:to-gray-700 border border-gray-100 dark:border-gray-600 rounded-xl hover:shadow-md dark:card-hover-dark transition-all duration-300"
                         >
                           <div className="flex-1">
-                            <div className="flex items-center gap-3">
+                            <div className="flex items-center flex-wrap gap-3">
                               <div
                                 className={`w-3 h-3 rounded-full ${
                                   transaction.type === "income"
