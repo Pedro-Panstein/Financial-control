@@ -36,8 +36,6 @@ interface DataImportProps {
 interface ImportResult {
   success: number;
   errors: string[];
-  duplicates: number; // mantém a contagem como antes
-  duplicatedItems: Omit<Transaction, "id">[]; // <-- novo array para exibição
   imported: Omit<Transaction, "id">[];
 }
 
@@ -161,19 +159,6 @@ export function DataImport({
     };
   };
 
-  const checkDuplicate = (
-    transaction: Omit<Transaction, "id">,
-    existing: Transaction[]
-  ): boolean => {
-    return existing.some(
-      (t) =>
-        t.date === transaction.date &&
-        t.description === transaction.description &&
-        t.amount === transaction.amount &&
-        t.type === transaction.type
-    );
-  };
-
   const processFile = async () => {
     if (!file) return;
 
@@ -195,8 +180,6 @@ export function DataImport({
       const result: ImportResult = {
         success: 0,
         errors: [],
-        duplicates: 0,
-        duplicatedItems: [], // <-- aqui
         imported: [],
       };
 
@@ -216,22 +199,6 @@ export function DataImport({
 
         const transaction = validation.transaction!;
 
-        // Verificar duplicatas
-        if (
-          checkDuplicate(transaction, currentTransactions) ||
-          result.imported.some(
-            (t) =>
-              t.date === transaction.date &&
-              t.description === transaction.description &&
-              t.amount === transaction.amount &&
-              t.type === transaction.type
-          )
-        ) {
-          result.duplicates++;
-          result.duplicatedItems.push(transaction); // <-- armazenando as duplicatas para exibir
-          continue;
-        }
-
         result.imported.push(transaction);
         result.success++;
 
@@ -248,8 +215,6 @@ export function DataImport({
             error instanceof Error ? error.message : "Erro desconhecido"
           }`,
         ],
-        duplicates: 0,
-        duplicatedItems: [], // <-- Adiciona aqui
         imported: [],
       });
     } finally {
@@ -408,14 +373,6 @@ export function DataImport({
                     Importados
                   </div>
                 </div>
-                <div className="text-center p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
-                  <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
-                    {result.duplicates}
-                  </div>
-                  <div className="text-sm text-yellow-600 dark:text-yellow-400">
-                    Duplicados
-                  </div>
-                </div>
                 <div className="text-center p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
                   <div className="text-2xl font-bold text-red-600 dark:text-red-400">
                     {result.errors.length}
@@ -463,24 +420,6 @@ export function DataImport({
                         ... e mais {result.imported.length - 5} transações
                       </div>
                     )}
-                  </div>
-                </div>
-              )}
-              {result.duplicatedItems.length > 0 && (
-                <div className="space-y-2">
-                  <h4 className="font-medium text-yellow-600 dark:text-yellow-400">
-                    Transações Duplicadas (ignoradas):
-                  </h4>
-                  <div className="max-h-32 overflow-y-auto space-y-1 border rounded-lg p-3 bg-yellow-50 dark:bg-yellow-900/20">
-                    {result.duplicatedItems.map((t, i) => (
-                      <div
-                        key={i}
-                        className="text-sm text-yellow-800 dark:text-yellow-300"
-                      >
-                        {t.date} - {t.description} ({t.category}) -{" "}
-                        {formatCurrency(t.amount)}
-                      </div>
-                    ))}
                   </div>
                 </div>
               )}
